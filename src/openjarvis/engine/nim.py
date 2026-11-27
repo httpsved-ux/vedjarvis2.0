@@ -286,7 +286,14 @@ class NIMEngine(InferenceEngine):
         data = resp.json()
         return [m["id"] for m in data.get("data", [])]
 
+    def can_serve(self, model: str) -> bool:
+        if self.is_cloud and not self._api_key:
+            return False
+        return True
+
     def health(self) -> bool:
+        if self.is_cloud and not self._api_key:
+            return False
         try:
             resp = self._client.get(
                 f"{self._api_prefix}/health/ready",
